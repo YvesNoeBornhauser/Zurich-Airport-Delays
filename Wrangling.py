@@ -36,7 +36,14 @@ df_wetter["date"] = pd.to_datetime(df_wetter["date"])
 
 #Mergen, wichtige Variablen selektieren
 df = df.merge(df_wetter, "left", left_on="Date", right_on="date")
-df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur"]]
+
+#Rohölpreise hinzufügen
+df_oil = pd.read_csv("Crude_Oil_Prices_Brent_Europe.csv")
+df_oil["oil_date"] = pd.to_datetime(df_oil["oil_date"])
+df_oil = df_oil[df_oil["oil_date"] < "2026-03-01"]
+df = df.merge(df_oil, "left", left_on="Date", right_on="oil_date")
+
+df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur", "oil_price"]]
 df.to_csv("merge.csv")
 
 #Schauen ob Datum in Ferien, Wochentag und Monat hinzufügen
