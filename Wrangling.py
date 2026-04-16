@@ -46,7 +46,7 @@ df_oil["oil_date"] = pd.to_datetime(df_oil["oil_date"])
 df_oil = df_oil[df_oil["oil_date"] < "2026-03-01"]
 df = df.merge(df_oil, "left", left_on="Date", right_on="oil_date")
 
-df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege_total", "piste_10", "piste_10_binär", "piste_16", "piste_28", "piste_32", "piste_34", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur", "oil_price"]]
+df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege_total", "piste_10_binär", "piste_16", "piste_28", "piste_32", "piste_34", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur", "oil_price"]]
 df.to_csv("merge.csv")
 
 #Schauen ob Datum in Ferien, Wochentag und Monat hinzufügen
