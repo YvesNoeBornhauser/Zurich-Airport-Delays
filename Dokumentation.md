@@ -4,7 +4,14 @@
 
 Bei der Wahl des Themas für das Modul "Data Engineering and Wrangling" war die ursprüngliche Idee, die Verspätungen bzw. die Wartezeiten der Achterbahn Silverstar im Europapark zu vorhersagen. Diese Idee mussten wir jedoch relativ schnell wieder verwerfen, da sich die Beschaffung der Daten als relativ schwer entpuppte und viele spannende Daten leider hinter einer Paywall stehen.
 Als zweite Idee kam uns dann die Berechnung der Flugverspätungen am Flughafen Zürich. Das Projekt kombiniert mehrere Datenquellen, um Faktoren zu identifizieren, die zu Verspätungen bei Abflügen führen. Die kombinierten Daten umfassen den Zeitraum von 2019 bis 2026 und berücksichtigen operative, meteorologische und wirtschaftliche Einflussfaktoren.
-Zum Schluss haben wir eine Datei erstellt, die die Korrelationen zwischen den einzelnen Daten errechnet und uns als Output eine Korrelationsmatrix für alle Daten sowie die Korrelationen nur in Bezug auf die Verspätungen generiert.  
+Zum Schluss haben wir eine Datei erstellt, die die Korrelationen zwischen den einzelnen Daten errechnet und uns als Output eine Korrelationsmatrix für alle Daten sowie die Korrelationen nur in Bezug auf die Verspätungen generiert. Bei diesen Resultaten ist es jedoch spannend zu sehen, das Daten, bei welchen man denkt, dass sie eine grossen Einfluss hätten, nur wenig korrelieren und andere dafür viel mehr. 
+
+
+## Annahmen und Limitierungen
+
+Bei der Interpretation dieser Analyse sollten mehrere Annahmen berücksichtigt werden. Erstens wird angenommen, dass die Wetterdaten der Station Kloten repräsentativ für die Bedingungen am Flughafen Zürich sind. Zweitens wird unterstellt, dass Rohölpreise mit dem Flugverkehr und den Betriebskosten der Fluggesellschaften korrelieren. Drittens wird davon ausgegangen, dass Feiertagsdaten das Passagieraufkommen und damit die Belastung des Flughafens beeinflussen.
+
+Die Analyse weist auch verschiedene Limitierungen auf. Es können Datenlücken bei den Wetter- oder Ölpreisangaben entstehen, die durch fehlende Werte in der Analyse dargestellt werden. Der Analysezeitraum von 2019 bis 2026 ist relativ begrenzt und könnte längerfristige Trends nicht vollständig abbilden. Die COVID-19-Pandemie hat erhebliche Auswirkungen auf den Flugverkehr gehabt und könnte die Daten verzerren. Schliesslich ist wichtig zu betonen, dass diese Analyse Korrelationen aufdeckt, nicht jedoch Kausalbeziehungen nachweist. Eine hohe Korrelation zwischen zwei Variablen bedeutet nicht zwingend, dass die eine die andere verursacht.
 
 
 ## Datenquellen und ihre Bedeutung
@@ -40,15 +47,9 @@ Abschliessend werden kategorische Variablen hinzugefügt, um weitere Information
 Der resultierende Datensatz wird in der Datei `merge.csv` gespeichert und enthält folgende Spalten: Das Datum («Date»), die durchschnittliche Verspätung in Minuten («Avg Departure Schedule Delay»), die Gesamtanzahl der Abflüge pro Tag («anzahl_abfluege_total»), die binäre Variable für Piste 10 («piste_10_binär»), sowie die Anzahl der Abflüge auf den Pisten 16, 28, 32 und 34. Zusätzlich sind die meteorologischen Variablen Niederschlag, Windgeschwindigkeit, maximale Windgeschwindigkeit und Temperatur enthalten. Der Rohölpreis («oil_price»), der Feiertagsstatus («public_holiday»), der Wochentag («day_of_week») und der Monat («month») runden den Datensatz ab.
 
 
-## Annahmen und Limitierungen
-
-Bei der Interpretation dieser Analyse sollten mehrere Annahmen berücksichtigt werden. Erstens wird angenommen, dass die Wetterdaten der Station Kloten repräsentativ für die Bedingungen am Flughafen Zürich sind. Zweitens wird unterstellt, dass Rohölpreise mit dem Flugverkehr und den Betriebskosten der Fluggesellschaften korrelieren. Drittens wird davon ausgegangen, dass Feiertagsdaten das Passagieraufkommen und damit die Belastung des Flughafens beeinflussen.
-
-Die Analyse weist auch verschiedene Limitierungen auf. Es können Datenlücken bei den Wetter- oder Ölpreisangaben entstehen, die durch fehlende Werte in der Analyse dargestellt werden. Der Analysezeitraum von 2019 bis 2026 ist relativ begrenzt und könnte längerfristige Trends nicht vollständig abbilden. Die COVID-19-Pandemie hat erhebliche Auswirkungen auf den Flugverkehr gehabt und könnte die Daten verzerren. Schliesslich ist wichtig zu betonen, dass diese Analyse Korrelationen aufdeckt, nicht jedoch Kausalbeziehungen nachweist. Eine hohe Korrelation zwischen zwei Variablen bedeutet nicht zwingend, dass die eine die andere verursacht.
-
-
 ## Technische Umsetzung
 
 Die Analyse wird in Python 3.9 oder höher durchgeführt. Hauptsächlich werden die Bibliotheken pandas für die Datenverarbeitung, numpy für numerische Berechnungen und holidays zur Verwaltung von Feiertagsdaten verwendet. Der Datenprozess wird durch ein einziges Python-Skript namens `Wrangling.py` orchestriert, das alle beschriebenen Transformationsschritte sequenziell ausführt.
+
 
 ## Fazit
