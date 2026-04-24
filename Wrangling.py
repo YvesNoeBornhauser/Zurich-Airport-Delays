@@ -1,16 +1,17 @@
 import pandas as pd
 import holidays 
 import numpy as np
+from Andere_Skripte.WEF_scraper import fetch_wef_dates
 
 
 #Verspätungsdaten als Dataframe setzen und nach Zürich filtern
-df = pd.read_excel("Airports_Punctuality.xlsx")
+df = pd.read_excel("Quellen/Airports_Punctuality.xlsx")
 df = df[["Date", "Airport", "Avg Departure Schedule Delay"]]
 df = df[df["Airport"] == "Zurich"]
 df["Date"] = pd.to_datetime(df["Date"])
 
 #Abflüge pro Tag als erstes Feature reinholen und Datum strukturieren für Merge mit Verspätungs Dataframe
-df_abfluege = pd.read_csv("zrh_abfluege_pro_tag.csv")
+df_abfluege = pd.read_csv("Quellen/zrh_abfluege_pro_tag.csv")
 
 #Datum korrekt formatieren für den Merge, da das Jahr in der CSV nur zweistellig ist
 #Dies weil es sonst extrem buggy war und beim mergen teilweise Daten verloren gingen
@@ -27,7 +28,7 @@ df = df[df["Date"] < "2026-03-01"]
 df.to_csv("merge.csv")
 
 #Wetter Daten hinzufügen
-df_wetter = pd.read_csv("Wetterdaten_Kloten.csv")
+df_wetter = pd.read_csv("Quellen/Wetterdaten_Kloten.csv")
 df_wetter = df_wetter[["date", "prcp", "wspd", "wpgt", "tavg"]]
 df_wetter = df_wetter.rename(columns={
     "prcp": "regen",
@@ -41,7 +42,7 @@ df_wetter["date"] = pd.to_datetime(df_wetter["date"])
 df = df.merge(df_wetter, "left", left_on="Date", right_on="date")
 
 #Rohölpreise hinzufügen
-df_oil = pd.read_csv("Crude_Oil_Prices_Brent_Europe.csv")
+df_oil = pd.read_csv("Quellen/Crude_Oil_Prices_Brent_Europe.csv")
 df_oil["oil_date"] = pd.to_datetime(df_oil["oil_date"])
 df_oil = df_oil[df_oil["oil_date"] < "2026-03-01"]
 df = df.merge(df_oil, "left", left_on="Date", right_on="oil_date")
@@ -55,5 +56,10 @@ schweiz_ferien = pd.to_datetime(list(schweiz_ferien.keys()))
 df["public_holiday"] = df["Date"].isin(schweiz_ferien)
 df["day_of_week"] = df['Date'].dt.day_name()
 df["month"] = df["Date"].dt.month
+
+#WEF hinzufügen, ob es an dem Tag war, ja/nein
+df_wef = fetch_wef_dates()
+print(df_wef)
+df["WEF"] = df["Date"].isin(df_wef)
 
 df.to_csv("Merge.csv")

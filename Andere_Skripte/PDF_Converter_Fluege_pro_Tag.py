@@ -1,8 +1,8 @@
 import csv
 import pdfplumber
 
-pdf_path = "monatliche-flugbewegungen_20260320.pdf"
-csv_path = "zrh_abfluege_pro_tag.csv"
+pdf_path = "Quellen/monatliche-flugbewegungen_20260320.pdf"
+csv_path = "Quellen/zrh_abfluege_pro_tag.csv"
 
 # Erwartete Buchstabenfolge in der Kopfzeile:
 # ABCD = Piste 10 | EFG = Piste 16 | IK = Piste 28 | NO = Piste 32 | NO = Piste 34

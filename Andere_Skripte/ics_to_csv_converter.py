@@ -21,4 +21,4 @@ def ics_to_csv(ics_file_path, csv_file_path):
 
                 writer.writerow([summary, dtstart, dtend, location, description])
 
-ics_to_csv('ferienplan_2025-2026.ics', 'ferienplan_2025-2026.csv')
+ics_to_csv('Quellen/ferienplan_2025-2026.ics', 'Quellen/ferienplan_2025-2026.csv')

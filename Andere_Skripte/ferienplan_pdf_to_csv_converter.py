@@ -87,4 +87,4 @@ def extract_ferien_to_csv(pdf_path, csv_path):
         writer.writeheader()
         writer.writerows(ferien_liste)
 
-extract_ferien_to_csv('ferienplan_2019-2025.pdf', 'ferienplan_2019-2025.csv')
+extract_ferien_to_csv('Quellen/ferienplan_2019-2025.pdf', 'Quellen/ferienplan_2019-2025.csv')
