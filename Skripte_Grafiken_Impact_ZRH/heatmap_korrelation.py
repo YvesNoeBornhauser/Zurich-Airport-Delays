@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
@@ -43,6 +47,11 @@ zrh_cmap = mcolors.LinearSegmentedColormap.from_list(
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
 
+if "schnee_vorhanden" not in df.columns:
+    df["schnee_vorhanden"] = np.where((df["temperatur"] < 2) & (df["regen"] > 0), 1, 0)
+if "schnee_intensität" not in df.columns:
+    df["schnee_intensität"] = np.where((df["temperatur"] < 2) & (df["regen"] > 0), df["regen"], 0)
+
 # Kategorische Spalten kodieren
 df["WEF"]            = df["WEF"].map({True: 1, False: 0, "True": 1, "False": 0})
 df["public_holiday"] = df["public_holiday"].map({True: 1, False: 0, "True": 1, "False": 0})
@@ -55,7 +64,8 @@ NUMERIC_COLS = [
     "anzahl_abfluege_total",
     "piste_16", "piste_28", "piste_32", "piste_34", "piste_10_binär",
     "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit",
-    "temperatur", "oil_price", "90_day_average_oil_price",
+    "temperatur", "schnee_vorhanden", "schnee_intensität",
+    "oil_price", "90_day_average_oil_price",
     "oil_trend", "oil_volatility_90",
     "public_holiday", "WEF", "day_of_week", "month",
 ]
@@ -72,6 +82,8 @@ LABELS = {
     "windgeschwindigkeit":          "Windgeschwindigkeit",
     "maximale_windgeschwindigkeit": "Max. Windgeschwindigkeit",
     "temperatur":                   "Temperatur",
+    "schnee_vorhanden":             "Schnee vorhanden",
+    "schnee_intensität":            "Schnee-Intensität",
     "oil_price":                    "Ölpreis",
     "90_day_average_oil_price":     "90-Tage-Ø Ölpreis",
     "oil_trend":                    "Ölpreis-Trend",
@@ -86,7 +98,7 @@ numeric_df = df[NUMERIC_COLS].rename(columns=LABELS).dropna()
 corr = numeric_df.corr()
 
 # ── Grafik 1: Vollständige Korrelationsmatrix ─────────────────────────────────
-fig, ax = plt.subplots(figsize=(15, 13))
+fig, ax = plt.subplots(figsize=(17, 15))
 fig.patch.set_facecolor("white")
 
 mask = np.triu(np.ones_like(corr, dtype=bool), k=1)  # oberes Dreieck ausblenden
@@ -97,7 +109,7 @@ sns.heatmap(
     cmap=zrh_cmap,
     vmin=-1, vmax=1,
     annot=True, fmt=".2f",
-    annot_kws={"size": 7},
+    annot_kws={"size": 6},
     linewidths=0.4, linecolor="#DDDDDD",
     square=True,
     cbar_kws={"shrink": 0.7, "label": "Pearson r"},
@@ -128,7 +140,7 @@ delay_corr = (
 
 colors = [ZRH_RED if v > 0 else ZRH_BLUE for v in delay_corr.values]
 
-fig2, ax2 = plt.subplots(figsize=(10, 8))
+fig2, ax2 = plt.subplots(figsize=(10, 9))
 fig2.patch.set_facecolor("white")
 
 bars = ax2.barh(delay_corr.index, delay_corr.values, color=colors, height=0.6)

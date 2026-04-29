@@ -38,6 +38,10 @@ df_wetter = df_wetter.rename(columns={
 })
 df_wetter["date"] = pd.to_datetime(df_wetter["date"])
 
+#Schnee hinzufügen, sobald Temperatur unter 2 Grad und Regen vorhanden (Schnee kann anscheinend schon ab 2 Grad fallen)
+df_wetter["schnee_vorhanden"] = np.where((df_wetter["temperatur"] < 2) & (df_wetter["regen"] > 0), 1, 0)
+df_wetter["schnee_intensität"] = np.where((df_wetter["temperatur"] < 2) & (df_wetter["regen"] > 0), df_wetter["regen"], 0)
+
 #Mergen, wichtige Variablen selektieren
 df = df.merge(df_wetter, "left", left_on="Date", right_on="date")
 
@@ -61,7 +65,7 @@ df_oil["oil_trend"] = df_oil["7_day_average_oil_price"] - df_oil["90_day_average
 df_oil["oil_volatility_90"] = df_oil["oil_price"].rolling(window=90).std().shift(1)
 
 df = df.merge(df_oil, "left", left_on="Date", right_on="oil_date")
-df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege_total", "piste_10_binär", "piste_16", "piste_28", "piste_32", "piste_34", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur", "oil_price", "90_day_average_oil_price", "oil_trend", "oil_volatility_90"]]
+df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege_total", "piste_10_binär", "piste_16", "piste_28", "piste_32", "piste_34", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur", "oil_price", "90_day_average_oil_price", "oil_trend", "oil_volatility_90", "schnee_vorhanden", "schnee_intensität"]]
 
 #Schauen ob Datum in Ferien, Wochentag und Monat hinzufügen
 schweiz_ferien = holidays.Switzerland(subdiv="ZH", years=[2022, 2023, 2024, 2025, 2026])
