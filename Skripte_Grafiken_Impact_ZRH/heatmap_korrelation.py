@@ -104,11 +104,6 @@ sns.heatmap(
     ax=ax,
 )
 
-ax.set_title(
-    "Windgeschwindigkeit und Pistennutzung korrelieren am stärksten\n"
-    "mit der mittleren Abflugverspätung",
-    fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
-)
 ax.tick_params(axis="x", labelrotation=45)
 ax.tick_params(axis="y", labelrotation=0)
 ax.set_facecolor("white")
@@ -141,10 +136,23 @@ ax2.axvline(0, color=ZRH_GREY, linewidth=0.8, linestyle="--")
 ax2.set_xlim(-1, 1)
 ax2.set_xlabel("Pearson r", color="#58595B")
 ax2.set_title(
-    "Anzahl Abflüge und Windgeschwindigkeit treiben die Verspätung –\n"
-    "Temperatur wirkt leicht dämpfend",
+    "Korrelation mit Ø Abflugverspätung",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
+
+for bar, value in zip(bars, delay_corr.values):
+    x_offset = 0.02 if value >= 0 else -0.02
+    ha = "left" if value >= 0 else "right"
+    ax2.text(
+        value + x_offset,
+        bar.get_y() + bar.get_height() / 2,
+        f"{value:.2f}",
+        va="center",
+        ha=ha,
+        fontsize=9,
+        color="#58595B",
+        clip_on=False,
+    )
 
 for spine in ["top", "right"]:
     ax2.spines[spine].set_visible(False)
