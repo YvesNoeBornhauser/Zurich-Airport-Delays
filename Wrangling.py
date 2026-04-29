@@ -44,11 +44,24 @@ df = df.merge(df_wetter, "left", left_on="Date", right_on="date")
 #Rohölpreise hinzufügen
 df_oil = pd.read_csv("Quellen/Crude_Oil_Prices_Brent_Europe.csv")
 df_oil["oil_date"] = pd.to_datetime(df_oil["oil_date"])
-df_oil = df_oil[df_oil["oil_date"] < "2026-03-01"]
-df = df.merge(df_oil, "left", left_on="Date", right_on="oil_date")
 
-df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege_total", "piste_10_binär", "piste_16", "piste_28", "piste_32", "piste_34", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur", "oil_price"]]
-df.to_csv("merge.csv")
+#Ölpreise vom Wochende, die fehlen mit Daten vom Vortag bzw. Freitag befüllen
+df_oil = df_oil.sort_values("oil_date").set_index("oil_date").asfreq("D")
+df_oil["oil_price"] = df_oil["oil_price"].ffill()
+df_oil = df_oil.reset_index()
+
+#Durchschnittlicher Ölpreis de rletzten 90 Tage 
+df_oil["90_day_average_oil_price"] = (df_oil["oil_price"].rolling(window=90).mean().shift(1))
+
+#Trend berechnen von Ölpreis (Formel ist Durchschnitt der letzten 7 Tage - Durchschnitt der letzten 90 Tage, positiver Wert = Ölpreis gestiegen)
+df_oil["7_day_average_oil_price"] = df_oil["oil_price"].rolling(window=7).mean().shift(1)
+df_oil["oil_trend"] = df_oil["7_day_average_oil_price"] - df_oil["90_day_average_oil_price"]
+
+#Standardabweichung von Ölpreis für letzte 90 Tage berechnen
+df_oil["oil_volatility_90"] = df_oil["oil_price"].rolling(window=90).std().shift(1)
+
+df = df.merge(df_oil, "left", left_on="Date", right_on="oil_date")
+df = df[["Date", "Avg Departure Schedule Delay", "anzahl_abfluege_total", "piste_10_binär", "piste_16", "piste_28", "piste_32", "piste_34", "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit", "temperatur", "oil_price", "90_day_average_oil_price", "oil_trend", "oil_volatility_90"]]
 
 #Schauen ob Datum in Ferien, Wochentag und Monat hinzufügen
 schweiz_ferien = holidays.Switzerland(subdiv="ZH", years=[2022, 2023, 2024, 2025, 2026])
@@ -59,7 +72,6 @@ df["month"] = df["Date"].dt.month
 
 #WEF hinzufügen, ob es an dem Tag war, ja/nein
 df_wef = fetch_wef_dates()
-print(df_wef)
 df["WEF"] = df["Date"].isin(df_wef)
 
-df.to_csv("Merge.csv")
+df.to_csv("merge.csv")

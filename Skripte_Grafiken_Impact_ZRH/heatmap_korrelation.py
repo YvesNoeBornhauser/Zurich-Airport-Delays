@@ -55,7 +55,8 @@ NUMERIC_COLS = [
     "anzahl_abfluege_total",
     "piste_16", "piste_28", "piste_32", "piste_34", "piste_10_binär",
     "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit",
-    "temperatur", "oil_price",
+    "temperatur", "oil_price", "90_day_average_oil_price",
+    "oil_trend", "oil_volatility_90",
     "public_holiday", "WEF", "day_of_week", "month",
 ]
 
@@ -72,6 +73,9 @@ LABELS = {
     "maximale_windgeschwindigkeit": "Max. Windgeschwindigkeit",
     "temperatur":                   "Temperatur",
     "oil_price":                    "Ölpreis",
+    "90_day_average_oil_price":     "90-Tage-Ø Ölpreis",
+    "oil_trend":                    "Ölpreis-Trend",
+    "oil_volatility_90":            "Ölpreis-Volatilität (90 T.)",
     "public_holiday":               "Feiertag",
     "WEF":                          "WEF",
     "day_of_week":                  "Wochentag",
@@ -82,7 +86,7 @@ numeric_df = df[NUMERIC_COLS].rename(columns=LABELS).dropna()
 corr = numeric_df.corr()
 
 # ── Grafik 1: Vollständige Korrelationsmatrix ─────────────────────────────────
-fig, ax = plt.subplots(figsize=(13, 11))
+fig, ax = plt.subplots(figsize=(15, 13))
 fig.patch.set_facecolor("white")
 
 mask = np.triu(np.ones_like(corr, dtype=bool), k=1)  # oberes Dreieck ausblenden
@@ -93,7 +97,7 @@ sns.heatmap(
     cmap=zrh_cmap,
     vmin=-1, vmax=1,
     annot=True, fmt=".2f",
-    annot_kws={"size": 8},
+    annot_kws={"size": 7},
     linewidths=0.4, linecolor="#DDDDDD",
     square=True,
     cbar_kws={"shrink": 0.7, "label": "Pearson r"},
@@ -129,7 +133,7 @@ delay_corr = (
 
 colors = [ZRH_RED if v > 0 else ZRH_BLUE for v in delay_corr.values]
 
-fig2, ax2 = plt.subplots(figsize=(10, 7))
+fig2, ax2 = plt.subplots(figsize=(10, 8))
 fig2.patch.set_facecolor("white")
 
 bars = ax2.barh(delay_corr.index, delay_corr.values, color=colors, height=0.6)
