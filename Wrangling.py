@@ -54,7 +54,7 @@ df_oil = df_oil.sort_values("oil_date").set_index("oil_date").asfreq("D")
 df_oil["oil_price"] = df_oil["oil_price"].ffill()
 df_oil = df_oil.reset_index()
 
-#Durchschnittlicher Ölpreis de rletzten 90 Tage 
+#Durchschnittlicher Ölpreis der letzten 90 Tage 
 df_oil["90_day_average_oil_price"] = (df_oil["oil_price"].rolling(window=90).mean().shift(1))
 
 #Trend berechnen von Ölpreis (Formel ist Durchschnitt der letzten 7 Tage - Durchschnitt der letzten 90 Tage, positiver Wert = Ölpreis gestiegen)
