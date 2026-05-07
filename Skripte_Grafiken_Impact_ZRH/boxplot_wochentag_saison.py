@@ -40,7 +40,7 @@ set_zrh_style()
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
 
-TARGET = "Avg Departure Schedule Delay"
+TARGET = "Abflugverspätung ZRH"
 DAY_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 DAY_LABELS = {
     "Monday": "Montag",
@@ -135,14 +135,14 @@ ax.set_ylim(0, max(df_plot[TARGET].quantile(0.98) * 1.08, mean_values.max() + 5)
 ax.set_xlabel("Wochentag", color="#58595B", labelpad=10)
 ax.set_ylabel("Abflugverspätung (min)", color="#58595B", labelpad=10)
 ax.set_title(
-    f"Wochentag-Fingerabdruck: {top_weekday} hat den höchsten Median ({top_median:.1f} min)",
+    f"Wochenendnahe Tage sind verspätungsstärker; {top_weekday} hat den höchsten Median ({top_median:.1f} min)",
     fontsize=13,
     fontweight="bold",
     color=ZRH_BLUE,
     pad=16,
 )
 ax.tick_params(axis="x", rotation=0)
-ax.yaxis.grid(True, color="#E5E5E5", linewidth=0.6, zorder=1)
+ax.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
 ax.set_axisbelow(True)
 
 for spine in ["top", "right"]:

@@ -1,4 +1,9 @@
+import os
 import pathlib
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(ROOT / ".matplotlib-cache"))
+
 import matplotlib
 
 matplotlib.use("Agg")
@@ -7,6 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
+
 
 # ── ZRH Style ────────────────────────────────────────────────────────────────
 ZRH_BLUE  = "#003874"
@@ -24,14 +30,14 @@ def set_zrh_style():
         "font.sans-serif":   "Arial",
         "axes.titleweight":  "bold",
         "axes.titlesize":    14,
-        "axes.titlepad":     20,
+        "axes.titlepad":     18,
         "axes.labelcolor":   "#58595B",
         "axes.spines.top":   False,
         "axes.spines.right": False,
         "xtick.labelsize":   10,
         "ytick.labelsize":   10,
         "legend.frameon":    False,
-        "figure.figsize":    (10, 6),
+        "figure.figsize":    (12, 6),
         "figure.dpi":        100,
     })
 
@@ -39,54 +45,62 @@ def set_zrh_style():
 set_zrh_style()
 
 # ── Daten ─────────────────────────────────────────────────────────────────────
-ROOT = pathlib.Path(__file__).resolve().parents[1]
 df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+wind = df["maximale_windgeschwindigkeit"].dropna()
 
-TARGET = "Abflugverspätung ZRH"
+sturm_grenze = 60
+sturmtage = (wind >= sturm_grenze).sum()
+anteil_sturmtage = sturmtage / len(wind) * 100
 
-if "schnee_vorhanden" not in df.columns:
-    df["schnee_vorhanden"] = np.where((df["temperatur"] < 2) & (df["regen"] > 0), 1, 0)
-if "schnee_intensität" not in df.columns:
-    df["schnee_intensität"] = np.where((df["temperatur"] < 2) & (df["regen"] > 0), df["regen"], 0)
-
-df_snow = df[df["schnee_vorhanden"] == 1][["schnee_intensität", TARGET]].dropna()
-r = df_snow["schnee_intensität"].corr(df_snow[TARGET])
+max_wind = np.ceil(wind.max() / 5) * 5
+bins = np.arange(10, max_wind + 5, 5)
 
 # ── Plot ──────────────────────────────────────────────────────────────────────
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 fig.patch.set_facecolor("white")
 
-sns.regplot(
-    data=df_snow,
-    x="schnee_intensität",
-    y=TARGET,
-    scatter_kws={"color": ZRH_BLUE, "alpha": 0.65, "s": 45, "linewidths": 0},
-    line_kws={"color": ZRH_RED, "linewidth": 2.5},
-    ci=95,
-    ax=ax,
+counts, bin_edges, patches = ax.hist(
+    wind,
+    bins=bins,
+    color=ZRH_BLUE,
+    edgecolor="white",
+    linewidth=0.7,
+    zorder=2,
 )
 
-ax.set_xlim(left=0)
+for patch in patches:
+    if patch.get_x() >= sturm_grenze:
+        patch.set_facecolor(ZRH_RED)
+
+ax.axvline(
+    sturm_grenze,
+    color=ZRH_RED,
+    linestyle="--",
+    linewidth=2,
+    zorder=3,
+)
+
+ax.text(
+    sturm_grenze + 1.5,
+    max(counts) * 0.88,
+    f"Sturmtage\nab {sturm_grenze} km/h\n{sturmtage} Tage ({anteil_sturmtage:.1f}%)",
+    ha="left",
+    va="top",
+    fontsize=10,
+    color=ZRH_RED,
+    fontweight="bold",
+)
+
 ax.set_ylim(bottom=0)
-ax.set_xlabel("Schnee-Intensität (mm Niederschlag bei < 2 °C)", color="#58595B", labelpad=10)
-ax.set_ylabel("Ø Abflugverspätung (min)", color="#58595B", labelpad=10)
+ax.set_xlim(10, max_wind)
+ax.set_xlabel("Maximale Windgeschwindigkeit (km/h)", color="#58595B", labelpad=10)
+ax.set_ylabel("Anzahl Tage", color="#58595B", labelpad=10)
 ax.set_title(
-    f"Nur {len(df_snow)} Schneetage, aber mehr Schnee geht klar mit mehr Verspätung einher (r = {r:.2f})",
+    "Normales Zürcher Wetter bleibt meist unter 50 km/h, Sturmtage bilden den rechten Rand",
     fontsize=13,
     fontweight="bold",
     color=ZRH_BLUE,
     pad=16,
-)
-
-ax.text(
-    0.98,
-    0.05,
-    f"n = {len(df_snow)} Schneetage",
-    transform=ax.transAxes,
-    ha="right",
-    va="bottom",
-    fontsize=10,
-    color="#58595B",
 )
 
 ax.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
@@ -97,10 +111,10 @@ for spine in ["top", "right"]:
 
 plt.tight_layout()
 
-out_dir = ROOT / "Grafiken_Impact_ZRH"
+out_dir = ROOT / "Ist_Zustand" / "Grafiken"
 out_dir.mkdir(exist_ok=True)
-fig.savefig(out_dir / "schnee_intensitaet_delay_scatter.png", dpi=150, bbox_inches="tight")
-print("Gespeichert: schnee_intensitaet_delay_scatter.png")
-print(f"Schneetage: {len(df_snow)}")
-print(f"Pearson r: {r:.3f}")
+fig.savefig(out_dir / "04_max_windgeschwindigkeit_histogramm.png", dpi=150, bbox_inches="tight")
+
+print("Gespeichert: 04_max_windgeschwindigkeit_histogramm.png")
+print(f"Sturmtage ab {sturm_grenze} km/h: {sturmtage} ({anteil_sturmtage:.1f}%)")
 plt.close(fig)

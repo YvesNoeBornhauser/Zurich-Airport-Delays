@@ -46,10 +46,12 @@ df["temp_bin"] = pd.cut(
 )
 
 stats = (
-    df.groupby("temp_bin", observed=True)["Avg Departure Schedule Delay"]
+    df.groupby("temp_bin", observed=True)["Abflugverspätung ZRH"]
     .agg(mean="mean", count="count")
     .dropna()
 )
+top_bin = stats["mean"].idxmax()
+top_delay = stats.loc[top_bin, "mean"]
 
 # Farbe: Kältebins ZRH Blue → Hitze ZRH Red (Gradient über SKY)
 n = len(stats)
@@ -81,8 +83,7 @@ ax.set_ylabel("Ø Abflugverspätung (min)", color="#58595B")
 ax.set_xlabel("Temperaturklasse", color="#58595B")
 
 ax.set_title(
-    "Verspätung steigt bei hohen Temperaturen (>20 °C) – Hinweis auf\n"
-    "Passagiervolumen-Effekt, nicht primär physikalische Ursachen",
+    f"Extreme Kälte führt zur höchsten Verspätung ({top_bin}: {top_delay:.1f} min); Hitze ist saisonal verzerrt",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
 
@@ -96,7 +97,7 @@ for bar, cnt in zip(bars, stats["count"].values):
         fontsize=8, color=ZRH_GREY,
     )
 
-ax.yaxis.grid(True, color="#E5E5E5", linewidth=0.6, zorder=1)
+ax.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
 ax.set_axisbelow(True)
 
 for spine in ["top", "right"]:

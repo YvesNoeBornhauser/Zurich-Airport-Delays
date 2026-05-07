@@ -39,7 +39,7 @@ set_zrh_style()
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
 
-TARGET = "Avg Departure Schedule Delay"
+TARGET = "Abflugverspätung ZRH"
 MONTH_NAMES = {
     1: "Jan", 2: "Feb", 3: "Mär", 4: "Apr",
     5: "Mai", 6: "Jun", 7: "Jul", 8: "Aug",
@@ -134,8 +134,8 @@ for x_pos, group in enumerate(group_order):
 ax1.axhline(0, color=ZRH_GREY, linewidth=0.8, linestyle="--", zorder=1)
 ax1.set_xlabel("")
 ax1.set_ylabel("Abweichung vom Monatsmittel (min)", color="#58595B")
-ax1.set_title("WEF-Tage vs. übrige Tage", fontsize=12, fontweight="bold", color=ZRH_BLUE)
-ax1.yaxis.grid(True, color="#E5E5E5", linewidth=0.6, zorder=1)
+ax1.set_title("WEF-Tage liegen über dem Monatsmittel", fontsize=12, fontweight="bold", color=ZRH_BLUE)
+ax1.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
 ax1.set_axisbelow(True)
 
 x = np.arange(len(wef_monthly))
@@ -156,8 +156,8 @@ ax2.set_xticks(x)
 ax2.set_xticklabels(wef_labels, rotation=0)
 ax2.set_ylabel("Ø Abweichung WEF-Tage (min)", color="#58595B")
 ax2.set_xlabel("WEF-Monat", color="#58595B")
-ax2.set_title("WEF 2022 wird im Mai korrekt normalisiert", fontsize=12, fontweight="bold", color=ZRH_BLUE)
-ax2.yaxis.grid(True, color="#E5E5E5", linewidth=0.6, zorder=1)
+ax2.set_title("Kleine Gesamtkorrelation, aber jeder WEF-Monat liegt positiv", fontsize=12, fontweight="bold", color=ZRH_BLUE)
+ax2.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
 ax2.set_axisbelow(True)
 
 for bar, value, count in zip(bars, wef_monthly["mean"].values, wef_monthly["count"].values):

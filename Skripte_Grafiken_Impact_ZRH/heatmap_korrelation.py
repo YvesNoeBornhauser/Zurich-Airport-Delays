@@ -54,24 +54,24 @@ if "schnee_intensität" not in df.columns:
 
 # Kategorische Spalten kodieren
 df["WEF"]            = df["WEF"].map({True: 1, False: 0, "True": 1, "False": 0})
-df["public_holiday"] = df["public_holiday"].map({True: 1, False: 0, "True": 1, "False": 0})
+df["Feiertage"]     = df["Feiertage"].map({True: 1, False: 0, "True": 1, "False": 0})
 
 DAY_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 df["day_of_week"] = pd.Categorical(df["day_of_week"], categories=DAY_ORDER, ordered=True).codes
 
 NUMERIC_COLS = [
-    "Avg Departure Schedule Delay",
+    "Abflugverspätung ZRH",
     "anzahl_abfluege_total",
     "piste_16", "piste_28", "piste_32", "piste_34", "piste_10_binär",
     "regen", "windgeschwindigkeit", "maximale_windgeschwindigkeit",
     "temperatur", "schnee_vorhanden", "schnee_intensität",
     "oil_price", "90_day_average_oil_price",
     "oil_trend", "oil_volatility_90",
-    "public_holiday", "WEF", "day_of_week", "month",
+    "Feiertage", "WEF", "day_of_week", "month",
 ]
 
 LABELS = {
-    "Avg Departure Schedule Delay": "Ø Abflugverspätung",
+    "Abflugverspätung ZRH": "Ø Abflugverspätung",
     "anzahl_abfluege_total":        "Anzahl Abflüge",
     "piste_16":                     "Piste 16",
     "piste_28":                     "Piste 28",
@@ -88,7 +88,7 @@ LABELS = {
     "90_day_average_oil_price":     "90-Tage-Ø Ölpreis",
     "oil_trend":                    "Ölpreis-Trend",
     "oil_volatility_90":            "Ölpreis-Volatilität (90 T.)",
-    "public_holiday":               "Feiertag",
+    "Feiertage":                    "Feiertag",
     "WEF":                          "WEF",
     "day_of_week":                  "Wochentag",
     "month":                        "Monat",
@@ -97,28 +97,50 @@ LABELS = {
 numeric_df = df[NUMERIC_COLS].rename(columns=LABELS).dropna()
 corr = numeric_df.corr()
 
+HEATMAP_LABELS = {
+    "Ø Abflugverspätung": "Ø Abflug-\nverspätung",
+    "Anzahl Abflüge": "Anzahl\nAbflüge",
+    "Piste 10 (binär)": "Piste 10\n(binär)",
+    "Windgeschwindigkeit": "Wind-\ngeschw.",
+    "Max. Windgeschwindigkeit": "Max. Wind-\ngeschw.",
+    "Schnee vorhanden": "Schnee\nvorhanden",
+    "Schnee-Intensität": "Schnee-\nIntensität",
+    "90-Tage-Ø Ölpreis": "90-Tage-Ø\nÖlpreis",
+    "Ölpreis-Trend": "Ölpreis-\nTrend",
+    "Ölpreis-Volatilität (90 T.)": "Ölpreis-\nVolatilität\n(90 T.)",
+}
+
 # ── Grafik 1: Vollständige Korrelationsmatrix ─────────────────────────────────
-fig, ax = plt.subplots(figsize=(17, 15))
+fig, ax = plt.subplots(figsize=(20, 17))
 fig.patch.set_facecolor("white")
 
 mask = np.triu(np.ones_like(corr, dtype=bool), k=1)  # oberes Dreieck ausblenden
+corr_heatmap = corr.rename(index=HEATMAP_LABELS, columns=HEATMAP_LABELS)
 
 sns.heatmap(
-    corr,
+    corr_heatmap,
     mask=mask,
     cmap=zrh_cmap,
     vmin=-1, vmax=1,
     annot=True, fmt=".2f",
     annot_kws={"size": 6},
-    linewidths=0.4, linecolor="#DDDDDD",
+    linewidths=0.25, linecolor="#E6E6E6",
     square=True,
     cbar_kws={"shrink": 0.7, "label": "Pearson r"},
     ax=ax,
 )
 
-ax.tick_params(axis="x", labelrotation=45)
 ax.tick_params(axis="y", labelrotation=0)
+ax.tick_params(axis="x", labelrotation=0, labelsize=8)
+ax.set_xticklabels(ax.get_xticklabels(), ha="center")
 ax.set_facecolor("white")
+ax.set_title(
+    "Erster Überblick: Abfluganzahl, Temperatur, Schnee und Piste 32 zeigen die stärksten Zusammenhänge",
+    fontsize=13,
+    fontweight="bold",
+    color=ZRH_BLUE,
+    pad=18,
+)
 
 for spine in ax.spines.values():
     spine.set_visible(False)
@@ -148,7 +170,7 @@ ax2.axvline(0, color=ZRH_GREY, linewidth=0.8, linestyle="--")
 ax2.set_xlim(-1, 1)
 ax2.set_xlabel("Pearson r", color="#58595B")
 ax2.set_title(
-    "Korrelation mit Ø Abflugverspätung",
+    "Abfluganzahl ist der stärkste lineare Treiber, Ölpreis-Signale bleiben schwach erklärbar",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
 

@@ -133,14 +133,14 @@ ax.yaxis.set_major_formatter(mtick.PercentFormatter(xmax=100, decimals=0))
 ax.set_ylabel("Anteil an Abflügen", color="#58595B")
 ax.set_xlabel("Windgeschwindigkeit", color="#58595B")
 ax.set_title(
-    "Stärkere Winde verändern die Zusammensetzung der Pistennutzung",
+    "Mit stärkerem Wind wandert der Verkehr von Piste 28 zu Piste 32 und bei Extremwind zu Piste 10",
     fontsize=13,
     fontweight="bold",
     color=ZRH_BLUE,
     pad=16,
 )
 
-ax.yaxis.grid(True, color="#E5E5E5", linewidth=0.6, zorder=1)
+ax.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
 ax.set_axisbelow(True)
 
 for spine in ["top", "right"]:

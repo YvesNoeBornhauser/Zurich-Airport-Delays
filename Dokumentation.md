@@ -27,7 +27,7 @@ Für die wirtschaftliche Perspektive werden Rohölpreise aus der Datei `Crude_Oi
 
 ## Datenverarbeitung und Transformation
 
-Der Datenprozess beginnt mit dem Laden und Filtern der Verspätungsdaten. Aus der Excel-Datei werden die Spalten «Date», «Airport» und «Avg Departure Schedule Delay» extrahiert. Die Daten werden auf den Flughafen Zürich gefiltert, und das Datumsformat wird in das standardisierte `datetime`-Format konvertiert. Dies ermöglicht eine nahtlose Integration mit anderen Datenquellen.
+Der Datenprozess beginnt mit dem Laden und Filtern der Verspätungsdaten. Aus der Excel-Datei werden das Datum, der Flughafen und die Verspätungswerte extrahiert; im finalen Datensatz wird diese Spalte als «Abflugverspätung ZRH» geführt. Die Daten werden auf den Flughafen Zürich gefiltert, und das Datumsformat wird in das standardisierte `datetime`-Format konvertiert. Dies ermöglicht eine nahtlose Integration mit anderen Datenquellen.
 
 Die Abflugdaten erfordern eine aufwändigere Vorverarbeitung. Das Datumsformat in der CSV-Datei liegt im Format `dd.mm.yy` vor, wobei das Jahr nur zweistellig angegeben ist. Eine direkte Konvertierung hätte zu Datenverlusten beim Merge geführt, weshalb die Daten zunächst bereinigt, in Strings umgewandelt und anschliessend mit dem korrekten Format `%d.%m.%y` zu `YYYY-MM-DD` konvertiert werden. Die Variable «piste_10» wird dabei transformiert: Werte grösser als null werden zu 1 kodiert, ansonsten zu 0. Dies ermöglicht eine vereinfachte Analyse des Einflusses dieser seltener genutzten Bahn.
 
@@ -44,7 +44,7 @@ Abschliessend werden kategorische Variablen hinzugefügt, um weitere Information
 
 ## Struktur des finalen Datensatzes
 
-Der resultierende Datensatz wird in der Datei `merge.csv` gespeichert und enthält folgende Spalten: Das Datum («Date»), die durchschnittliche Verspätung in Minuten («Avg Departure Schedule Delay»), die Gesamtanzahl der Abflüge pro Tag («anzahl_abfluege_total»), die binäre Variable für Piste 10 («piste_10_binär»), sowie die Anzahl der Abflüge auf den Pisten 16, 28, 32 und 34. Zusätzlich sind die meteorologischen Variablen Niederschlag, Windgeschwindigkeit, maximale Windgeschwindigkeit und Temperatur enthalten. Der Rohölpreis («oil_price»), der Feiertagsstatus («public_holiday»), der Wochentag («day_of_week») und der Monat («month») runden den Datensatz ab.
+Der resultierende Datensatz wird in der Datei `merge.csv` gespeichert und enthält folgende Spalten: Das Datum («Date»), die durchschnittliche Verspätung in Minuten («Abflugverspätung ZRH»), die Gesamtanzahl der Abflüge pro Tag («anzahl_abfluege_total»), die binäre Variable für Piste 10 («piste_10_binär»), sowie die Anzahl der Abflüge auf den Pisten 16, 28, 32 und 34. Zusätzlich sind die meteorologischen Variablen Niederschlag, Windgeschwindigkeit, maximale Windgeschwindigkeit und Temperatur enthalten. Der Rohölpreis («oil_price»), der Feiertagsstatus («Feiertage»), der Wochentag («day_of_week») und der Monat («month») runden den Datensatz ab.
 
 
 ## Technische Umsetzung

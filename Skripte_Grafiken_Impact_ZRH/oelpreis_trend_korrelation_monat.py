@@ -40,7 +40,7 @@ MONTH_NAMES = {
     9: "Sep", 10: "Okt", 11: "Nov", 12: "Dez",
 }
 
-target = "Avg Departure Schedule Delay"
+target = "Abflugverspätung ZRH"
 feature = "oil_trend"
 
 df_corr = df[["Date", target, feature]].dropna()
@@ -58,6 +58,7 @@ monthly_corr = (
     .apply(lambda month_df: month_df[target].corr(month_df[feature]))
     .reindex(period_range)
 )
+mean_abs_corr = monthly_corr.abs().mean()
 
 colors = [
     ZRH_GREY if pd.isna(value) else ZRH_RED if value > 0 else ZRH_BLUE
@@ -83,13 +84,14 @@ ax.set_ylim(-1, 1)
 ax.set_ylabel("Pearson r", color="#58595B")
 ax.set_xlabel("Monat und Jahr", color="#58595B")
 ax.set_title(
-    "Korrelation zwischen Ölpreis-Trend und Ø Abflugverspätung pro Monat",
+    f"Ölpreis-Trends zeigen kein stabiles Muster zur Verspätung (Ø |r| = {mean_abs_corr:.2f})",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
-ax.set_xticks(list(x_positions))
-ax.set_xticklabels(labels, rotation=90)
+tick_step = 3
+ax.set_xticks(list(x_positions)[::tick_step])
+ax.set_xticklabels(labels[::tick_step], rotation=0)
 
-ax.yaxis.grid(True, color="#E5E5E5", linewidth=0.6, zorder=1)
+ax.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
 ax.set_axisbelow(True)
 
 for bar, value in zip(bars, monthly_corr.values):

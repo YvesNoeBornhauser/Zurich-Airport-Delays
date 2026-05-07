@@ -34,7 +34,7 @@ set_zrh_style()
 
 # ── Daten laden ───────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "Merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
 
 # ── Feature Engineering: relative Pistennutzung (Share) ──────────────────────
 for piste in ["piste_16", "piste_28", "piste_32", "piste_34"]:
@@ -42,7 +42,7 @@ for piste in ["piste_16", "piste_28", "piste_32", "piste_34"]:
 
 # ── Statistische Analyse: Korrelation Share → Verspätung ─────────────────────
 share_cols = ["piste_16_share", "piste_28_share", "piste_32_share", "piste_34_share"]
-target     = "Avg Departure Schedule Delay"
+target     = "Abflugverspätung ZRH"
 
 df_clean = df[share_cols + [target]].dropna()
 
@@ -79,10 +79,12 @@ for ax, (col, label) in zip(axes.flat, PISTEN_LABELS.items()):
     ax.set_ylabel("Ø Abflugverspätung (min)", color="#58595B")
     ax.tick_params(axis="x", rotation=0)
     ax.tick_params(axis="y", rotation=0)
+    ax.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
+    ax.set_axisbelow(True)
     sns.despine(ax=ax)
 
 fig.suptitle(
-    "Relative Pistennutzung und ihr Einfluss auf die Abflugverspätung",
+    "Relativ betrachtet entlastet Piste 28, während Piste 32 und 34 mit mehr Verspätung einhergehen",
     fontsize=15, fontweight="bold", color=ZRH_BLUE, y=1.02,
 )
 plt.tight_layout()

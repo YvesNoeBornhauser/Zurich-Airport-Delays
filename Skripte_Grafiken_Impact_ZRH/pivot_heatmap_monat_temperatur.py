@@ -50,7 +50,7 @@ df["temp_bin"] = pd.cut(df["temperatur"], bins=BIN_EDGES, labels=BIN_LABELS, rig
 df["month_name"] = df["month"].map(MONTH_NAMES)
 
 pivot = (
-    df.groupby(["month", "temp_bin"], observed=True)["Avg Departure Schedule Delay"]
+    df.groupby(["month", "temp_bin"], observed=True)["Abflugverspätung ZRH"]
     .mean()
     .unstack("temp_bin")
 )
@@ -58,7 +58,7 @@ pivot.index = [MONTH_NAMES[m] for m in pivot.index]
 
 # Stichprobenanzahl für Annotation (n)
 counts = (
-    df.groupby(["month", "temp_bin"], observed=True)["Avg Departure Schedule Delay"]
+    df.groupby(["month", "temp_bin"], observed=True)["Abflugverspätung ZRH"]
     .count()
     .unstack("temp_bin")
 )
@@ -74,16 +74,15 @@ sns.heatmap(
     annot=pivot.round(1).astype(str).where(pivot.notna(), other="–"),
     fmt="",
     annot_kws={"size": 9},
-    linewidths=0.5,
-    linecolor="#DDDDDD",
+    linewidths=0.25,
+    linecolor="#E6E6E6",
     cbar_kws={"label": "Ø Verspätung (min)", "shrink": 0.75},
     ax=ax,
     mask=pivot.isna(),
 )
 
 ax.set_title(
-    "Hohe Verspätungen in Sommermonaten – unabhängig von der Temperatur:\n"
-    "Saisoneffekt dominiert gegenüber dem Temperatureffekt",
+    "Sommer bleibt auch bei tieferen Temperaturen verspätungsstark; Temperatur allein erklärt den Effekt nicht",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
 ax.set_xlabel("Temperaturklasse (5 °C-Bins)", color="#58595B", labelpad=10)

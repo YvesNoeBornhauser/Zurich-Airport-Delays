@@ -41,10 +41,12 @@ MONTH_NAMES = {
 SOMMER = {6, 7, 8}
 
 monthly = (
-    df.groupby("month")["Avg Departure Schedule Delay"]
+    df.groupby("month")["Abflugverspätung ZRH"]
     .mean()
     .reindex(range(1, 13))
 )
+top_month = monthly.idxmax()
+top_delay = monthly.loc[top_month]
 
 colors = [ZRH_SKY if m in SOMMER else ZRH_BLUE for m in monthly.index]
 
@@ -63,11 +65,11 @@ bars = ax.bar(
 ax.set_ylim(0, monthly.max() * 1.18)
 ax.set_ylabel("Ø Abflugverspätung (min)", color="#58595B")
 ax.set_title(
-    "Sommermonate Juni–August verzeichnen die höchsten\nmittleren Abflugverspätungen",
+    f"{MONTH_NAMES[top_month]} ist der stärkste Verspätungsmonat; Sommer und September liegen klar höher",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
 
-ax.yaxis.grid(True, color="#E5E5E5", linewidth=0.6, zorder=1)
+ax.yaxis.grid(True, color=ZRH_GREY, alpha=0.25, linewidth=0.8, zorder=1)
 ax.set_axisbelow(True)
 
 for spine in ["top", "right"]:
