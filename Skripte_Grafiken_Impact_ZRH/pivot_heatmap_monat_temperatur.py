@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
@@ -36,7 +40,7 @@ zrh_cmap = mcolors.LinearSegmentedColormap.from_list(
 
 # ── Daten & Bins ──────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0)
+df = pd.read_csv(ROOT / "merge.csv")
 
 BIN_EDGES  = list(range(-10, 31, 5))
 BIN_LABELS = [f"{lo}–{lo+5} °C" for lo in BIN_EDGES[:-1]]

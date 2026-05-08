@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import seaborn as sns
@@ -38,7 +42,7 @@ set_zrh_style()
 
 # ── Daten & Kategorien ────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 
 TARGET = "Abflugverspätung ZRH"
 DAY_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -114,7 +118,7 @@ ax.plot(
     marker="D",
     markersize=5,
     linewidth=1.8,
-    label="Ø gesamt je Wochentag",
+    label="_nolegend_",
     zorder=5,
 )
 

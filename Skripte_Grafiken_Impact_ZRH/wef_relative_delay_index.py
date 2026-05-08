@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -37,7 +41,7 @@ set_zrh_style()
 
 # ── Daten & Relative Delay Index ──────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 
 TARGET = "Abflugverspätung ZRH"
 MONTH_NAMES = {
@@ -179,7 +183,7 @@ for ax in [ax1, ax2]:
 
 wef_mean = group_stats.loc["WEF-Tage", "mean"]
 fig.suptitle(
-    f"Relative Delay Index: WEF-Tage liegen im Schnitt {wef_mean:+.1f} min über ihrem Monatsmittel",
+    f"WEF-Tage liegen im Schnitt {wef_mean:+.1f} min über ihrem Monatsmittel",
     fontsize=14,
     fontweight="bold",
     color=ZRH_BLUE,

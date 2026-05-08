@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -32,7 +36,7 @@ set_zrh_style()
 
 # ── Daten ─────────────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 
 MONTH_NAMES = {
     1: "Jan", 2: "Feb", 3: "Mär", 4: "Apr",
@@ -84,7 +88,7 @@ ax.set_ylim(-1, 1)
 ax.set_ylabel("Pearson r", color="#58595B")
 ax.set_xlabel("Monat und Jahr", color="#58595B")
 ax.set_title(
-    f"Ölpreis-Trends zeigen kein stabiles Muster zur Verspätung (Ø |r| = {mean_abs_corr:.2f})",
+    "Ölpreis-Trends zeigen kein stabiles Muster zur Verspätung",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
 tick_step = 3

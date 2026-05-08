@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import seaborn as sns
@@ -32,7 +36,7 @@ set_zrh_style()
 
 # ── Daten & Bins ──────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0)
+df = pd.read_csv(ROOT / "merge.csv")
 
 # 5-Grad-Bins von -10 bis 30 (deckt -8.4 bis 27.0 ab)
 BIN_EDGES  = list(range(-10, 31, 5))

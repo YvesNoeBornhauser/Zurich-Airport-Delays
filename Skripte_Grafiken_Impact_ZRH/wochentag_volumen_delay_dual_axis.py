@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
@@ -38,7 +42,7 @@ set_zrh_style()
 
 # ── Daten ─────────────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 
 TARGET = "Abflugverspätung ZRH"
 VOLUME = "anzahl_abfluege_total"

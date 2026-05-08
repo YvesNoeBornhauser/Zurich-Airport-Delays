@@ -45,7 +45,7 @@ zrh_cmap = mcolors.LinearSegmentedColormap.from_list(
 
 # ── Daten laden ───────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 
 if "schnee_vorhanden" not in df.columns:
     df["schnee_vorhanden"] = np.where((df["temperatur"] < 2) & (df["regen"] > 0), 1, 0)
@@ -69,6 +69,9 @@ NUMERIC_COLS = [
     "oil_trend", "oil_volatility_90",
     "Feiertage", "WEF", "day_of_week", "month",
 ]
+
+# Imputationsmarker nicht als Einflussfaktoren in Impact-Grafiken nutzen
+NUMERIC_COLS = [col for col in NUMERIC_COLS if not col.endswith("_imputiert")]
 
 LABELS = {
     "Abflugverspätung ZRH": "Ø Abflugverspätung",
@@ -135,7 +138,7 @@ ax.tick_params(axis="x", labelrotation=0, labelsize=8)
 ax.set_xticklabels(ax.get_xticklabels(), ha="center")
 ax.set_facecolor("white")
 ax.set_title(
-    "Erster Überblick: Abfluganzahl, Temperatur, Schnee und Piste 32 zeigen die stärksten Zusammenhänge",
+    "Abfluganzahl hat die stärkste Korrelation, während Feiertage nur begrenzten Einfluss haben",
     fontsize=13,
     fontweight="bold",
     color=ZRH_BLUE,
@@ -170,7 +173,7 @@ ax2.axvline(0, color=ZRH_GREY, linewidth=0.8, linestyle="--")
 ax2.set_xlim(-1, 1)
 ax2.set_xlabel("Pearson r", color="#58595B")
 ax2.set_title(
-    "Abfluganzahl ist der stärkste lineare Treiber, Ölpreis-Signale bleiben schwach erklärbar",
+    "Abfluganzahl hat die stärkste Korrelation, während Feiertage nur begrenzten Einfluss haben",
     fontsize=13, fontweight="bold", color=ZRH_BLUE, pad=16,
 )
 

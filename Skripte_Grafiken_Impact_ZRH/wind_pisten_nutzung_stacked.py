@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import seaborn as sns
@@ -39,7 +43,7 @@ set_zrh_style()
 # ── Daten laden ───────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
-df_weather = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df_weather = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 df_flights = pd.read_csv(ROOT / "Quellen" / "zrh_abfluege_pro_tag.csv")
 df_flights["datum"] = pd.to_datetime(df_flights["datum"], format="%d.%m.%y").dt.normalize()
 

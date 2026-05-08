@@ -1,4 +1,8 @@
 import pathlib
+import matplotlib
+
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -34,7 +38,7 @@ set_zrh_style()
 
 # ── Daten laden ───────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 
 # ── Feature Engineering: relative Pistennutzung (Share) ──────────────────────
 for piste in ["piste_16", "piste_28", "piste_32", "piste_34"]:

@@ -45,7 +45,7 @@ def set_zrh_style():
 set_zrh_style()
 
 # ── Daten ─────────────────────────────────────────────────────────────────────
-df = pd.read_csv(ROOT / "merge.csv", index_col=0, parse_dates=["Date"])
+df = pd.read_csv(ROOT / "merge.csv", parse_dates=["Date"])
 wind = df["maximale_windgeschwindigkeit"].dropna()
 
 sturm_grenze = 60
